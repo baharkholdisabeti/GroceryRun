@@ -6,6 +6,7 @@
     <string name="add_item">Add Item</string>
     <string name="multiautocompletetextview">MultiAutoCompleteTextView</string>
     <string name="gotonotes">Go to Notes</string>
+    <string name="gotomap">Go to Map</string>
 
     // note activity xml
     <string name="checkout">Check out</string>

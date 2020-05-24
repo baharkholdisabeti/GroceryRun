@@ -29,4 +29,8 @@ class MainActivity : AppCompatActivity() {
     fun sendToNotes(view: View) {
         startActivity(Intent(this@MainActivity, NoteActivity::class.java))
     }
+
+    fun sendToMaps(view: View) {
+        startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+    }
 }
