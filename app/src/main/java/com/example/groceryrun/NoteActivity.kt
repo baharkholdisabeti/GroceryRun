@@ -1,10 +1,14 @@
 package com.example.groceryrun
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_note.*
 import org.json.JSONArray
@@ -32,8 +36,10 @@ class NoteActivity : AppCompatActivity() {
             for (i in 0 until itemArray.length()) {
                 // create a JSONObject for fetching single user data
                 var itemDetail = itemArray.getJSONObject(i)
-                var name = itemDetail.getString("name")
-                names.add(name)
+                var name = itemDetail.getString("name");
+
+                     names.add(name);
+
                 Log.i("Item loaded from json: ", name)
             }
         }
@@ -69,8 +75,58 @@ class NoteActivity : AppCompatActivity() {
     }
 
     fun saveItem(view: View) {     // for when a new item is added
-        if (enterItem.getText().toString()==""){
-            // errortrap
+        if (!names.contains(enterItem.getText().toString())){
+            // erase edittext text, not sure if we want to erase it though
+            enterItem.getText().clear()
+            //CAN'T SAY I UNDERSTAND ANY PART OF THE REST OF THIS PART OF THE IF STATEMENT
+            //https://stackoverflow.com/questions/5944987/how-to-create-a-popup-window-popupwindow-in-android was super helpful
+              // inflate the layout of the popup window
+            val inflater =
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView: View = inflater.inflate(R.layout.popup_window, null)
+        // create the popup window
+            val width = LinearLayout.LayoutParams.WRAP_CONTENT
+            val height = LinearLayout.LayoutParams.WRAP_CONTENT
+            val focusable = true // lets taps outside the popup also dismiss it
+
+            val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+            // show the popup window
+            // which view you pass in doesn't matter, it is only used for the window tolken
+            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+            // dismiss the popup window when touched
+            popupView.setOnTouchListener { v, event ->
+                popupWindow.dismiss()
+                true
+            }
+        }
+        else if (map.containsKey(enterItem.getText().toString()))
+        {
+            // erase edittext text, not sure if we want to erase it though
+            enterItem.getText().clear()
+            //CAN'T SAY I UNDERSTAND ANY PART OF THE REST OF THIS PART OF THE IF STATEMENT
+            //https://stackoverflow.com/questions/5944987/how-to-create-a-popup-window-popupwindow-in-android was super helpful
+            // inflate the layout of the popup window
+            val inflater =
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView: View = inflater.inflate(R.layout.popup_window_duplicate, null)
+            // create the popup window
+            val width = LinearLayout.LayoutParams.WRAP_CONTENT
+            val height = LinearLayout.LayoutParams.WRAP_CONTENT
+            val focusable = true // lets taps outside the popup also dismiss it
+
+            val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+            // show the popup window
+            // which view you pass in doesn't matter, it is only used for the window tolken
+            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+            // dismiss the popup window when touched
+            popupView.setOnTouchListener { v, event ->
+                popupWindow.dismiss()
+                true
+            }
         }
         else {     // save item to hashmap and create new spot for entering data, if that slot is filled out properly
             map.put(
