@@ -1,6 +1,7 @@
 package com.example.groceryrun
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -16,6 +17,7 @@ import org.json.JSONException
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
+//import com.example.groceryrun.SearchFragment
 
 
 class NoteActivity : AppCompatActivity() {
@@ -24,6 +26,10 @@ class NoteActivity : AppCompatActivity() {
     private var map : HashMap<String, Int> = HashMap<String, Int> ()
     private var count = 2000    // start at 2000 just in case some previous ones were already initialized
     private var names: ArrayList<String> = ArrayList()   // item/ category names
+
+    fun onFragmentInteraction(uri: Uri?) {
+        Log.i("Tag", "onFragmentInteraction called")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +42,9 @@ class NoteActivity : AppCompatActivity() {
             for (i in 0 until itemArray.length()) {
                 // create a JSONObject for fetching single user data
                 var itemDetail = itemArray.getJSONObject(i)
-                var name = itemDetail.getString("name");
+                var name = itemDetail.getString("name")
 
-                     names.add(name);
+                names.add(name)
 
                 Log.i("Item loaded from json: ", name)
             }
@@ -75,9 +81,9 @@ class NoteActivity : AppCompatActivity() {
     }
 
     fun saveItem(view: View) {     // for when a new item is added
-        if (!names.contains(enterItem.getText().toString())){
+        if (!names.contains(enterItem.text.toString())){
             // erase edittext text, not sure if we want to erase it though
-            enterItem.getText().clear()
+            enterItem.text.clear()
             //CAN'T SAY I UNDERSTAND ANY PART OF THE REST OF THIS PART OF THE IF STATEMENT
             //https://stackoverflow.com/questions/5944987/how-to-create-a-popup-window-popupwindow-in-android was super helpful
               // inflate the layout of the popup window
@@ -101,10 +107,10 @@ class NoteActivity : AppCompatActivity() {
                 true
             }
         }
-        else if (map.containsKey(enterItem.getText().toString()))
+        else if (map.containsKey(enterItem.text.toString()))
         {
             // erase edittext text, not sure if we want to erase it though
-            enterItem.getText().clear()
+            enterItem.text.clear()
             //CAN'T SAY I UNDERSTAND ANY PART OF THE REST OF THIS PART OF THE IF STATEMENT
             //https://stackoverflow.com/questions/5944987/how-to-create-a-popup-window-popupwindow-in-android was super helpful
             // inflate the layout of the popup window
@@ -130,21 +136,21 @@ class NoteActivity : AppCompatActivity() {
         }
         else {     // save item to hashmap and create new spot for entering data, if that slot is filled out properly
             map.put(
-                enterItem.getText().toString(),
+                enterItem.text.toString(),
                 1
             )
-            var msg = enterItem.getText().toString()
+            var msg = enterItem.text.toString()
             Log.i("New item saved: ", msg)
 
             // add new linear layout for edit text
-            val parent = findViewById(R.id.mainList) as LinearLayout
+            val parent = findViewById<LinearLayout>(R.id.mainList)
             val ll = LinearLayout(this)
             ll.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
             ll.orientation = LinearLayout.HORIZONTAL
 
             val tv = TextView(this)
-            tv.setText(enterItem.getText().toString())
+            tv.text = enterItem.text.toString()
 
             val removeButton = Button(this)
             removeButton.text = "Remove Item"
@@ -158,6 +164,11 @@ class NoteActivity : AppCompatActivity() {
             val findButton = Button(this)
             findButton.text = "Find Item"
             findButton.id = count + 1
+            findButton.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(view: View) {
+                    findClicked(view)
+                }
+            })
 
             // increment count by 2
             // even ids are removeButtons, odd are findButtons
@@ -169,12 +180,17 @@ class NoteActivity : AppCompatActivity() {
             parent.addView(ll)
 
             // erase edittext text
-            enterItem.getText().clear()
+            enterItem.text.clear()
         }
     }
 
     fun removeClicked (view: View){
         (view.parent.parent as ViewGroup).removeView(view.parent as ViewGroup)
+    }
+
+    fun findClicked (view: View){
+        val bottomSheetFragment = SearchFragment()
+        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
     companion object {
