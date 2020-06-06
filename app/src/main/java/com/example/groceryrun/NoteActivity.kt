@@ -1,6 +1,7 @@
 package com.example.groceryrun
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +27,11 @@ class NoteActivity : AppCompatActivity() {
     private var map : HashMap<String, Int> = HashMap<String, Int> ()
     private var count = 2000    // start at 2000 just in case some previous ones were already initialized
     private var names: ArrayList<String> = ArrayList()   // item/ category names
+
+    // has the user chosen a store already
+    private var storeChosen = true;
+
+    private  var textSize = 11; //text size of buttons
 
     fun onFragmentInteraction(uri: Uri?) {
         Log.i("Tag", "onFragmentInteraction called")
@@ -59,7 +65,7 @@ class NoteActivity : AppCompatActivity() {
         autocomplete.setAdapter(adapter)
     }
 
-    // load data from JSON file
+    // load data from JSON file for item list
     private fun loadJSONFromAsset(): String? {
         var json: String? = null
         json = try {
@@ -150,6 +156,8 @@ class NoteActivity : AppCompatActivity() {
             ll.orientation = LinearLayout.HORIZONTAL
 
             val tv = TextView(this)
+            tv.setMaxWidth(350);
+            tv.setMinWidth(350);
             tv.text = enterItem.text.toString()
 
             val removeButton = Button(this)
@@ -184,13 +192,21 @@ class NoteActivity : AppCompatActivity() {
         }
     }
 
+    // deletes an entry
     fun removeClicked (view: View){
         (view.parent.parent as ViewGroup).removeView(view.parent as ViewGroup)
     }
 
+    // opens search fragment to find specific item at the user's preferred store
     fun findClicked (view: View){
-        val bottomSheetFragment = SearchFragment()
-        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        // if store is not chosen, take user to maps activity to choose
+        if (storeChosen) {
+            val bottomSheetFragment = SearchFragment()
+            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+        }
+        else{ // TODO Differentiate which Activity calls Maps so that if Maps is called by Note, it returns to Note and opens SearchFragment
+            startActivity(Intent(this@NoteActivity, MapsActivity::class.java))
+        }
     }
 
     companion object {
