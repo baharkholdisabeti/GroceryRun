@@ -1,25 +1,22 @@
 package com.example.groceryrun
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.android.synthetic.main.fragment_search.*
 
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val link = "url"
 
 class SearchFragment : BottomSheetDialogFragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+    private var url: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            url = it.getString(link)
         }
     }
 
@@ -27,17 +24,19 @@ class SearchFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.i("Search received url", "Url: " + url)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
     companion object {
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
+        fun newInstance(link: String): SearchFragment {    // create a SearchFragment with url argument
+            Log.i("Search received url", "Link: " + link)
+            return SearchFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    this.putString("url", link)
                 }
             }
+        }
     }
 }

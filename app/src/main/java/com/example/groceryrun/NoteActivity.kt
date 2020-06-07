@@ -18,20 +18,19 @@ import org.json.JSONException
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
-//import com.example.groceryrun.SearchFragment
-
 
 class NoteActivity : AppCompatActivity() {
     private val TAG: String? = "NoteActivity"
-    // hashmap storing item, quantity, removeButton name, findButtonName
-    private var map : HashMap<String, Int> = HashMap<String, Int> ()
+    // hashmap storing item, findButton id
+    private var map : HashMap<Int, String> = HashMap<Int, String> ()
     private var count = 2000    // start at 2000 just in case some previous ones were already initialized
     private var names: ArrayList<String> = ArrayList()   // item/ category names
+    private var urls: ArrayList<String> = ArrayList()   // item/ category urls
 
     // has the user chosen a store already
     private var storeChosen = true;
 
-    private  var textSize = 11; //text size of buttons
+    //private  var textSize = 11; //text size of buttons
 
     fun onFragmentInteraction(uri: Uri?) {
         Log.i("Tag", "onFragmentInteraction called")
@@ -49,8 +48,10 @@ class NoteActivity : AppCompatActivity() {
                 // create a JSONObject for fetching single user data
                 var itemDetail = itemArray.getJSONObject(i)
                 var name = itemDetail.getString("name")
+                var url = itemDetail.getString("url")
 
                 names.add(name)
+                urls.add(url)
 
                 Log.i("Item loaded from json: ", name)
             }
@@ -113,7 +114,8 @@ class NoteActivity : AppCompatActivity() {
                 true
             }
         }
-        else if (map.containsKey(enterItem.text.toString()))
+        /*
+        else if (map.containsValue(enterItem.text.toString()))
         {
             // erase edittext text, not sure if we want to erase it though
             enterItem.text.clear()
@@ -139,11 +141,11 @@ class NoteActivity : AppCompatActivity() {
                 popupWindow.dismiss()
                 true
             }
-        }
+        } */  // if we want to only allow 1 of the same thing, we have to remove the entries from map in removeClicked()
         else {     // save item to hashmap and create new spot for entering data, if that slot is filled out properly
             map.put(
-                enterItem.text.toString(),
-                1
+                count+1,
+                enterItem.text.toString()
             )
             var msg = enterItem.text.toString()
             Log.i("New item saved: ", msg)
@@ -161,8 +163,9 @@ class NoteActivity : AppCompatActivity() {
             tv.text = enterItem.text.toString()
 
             val removeButton = Button(this)
-            removeButton.text = "Remove Item"
-            removeButton.id = count
+            removeButton.id = count                                            // id of remove buttons are even
+            val icon = resources.getDrawable(R.drawable.ic_del_24, theme)
+            removeButton.background = icon
             removeButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(view: View) {
                     removeClicked(view)
@@ -171,7 +174,7 @@ class NoteActivity : AppCompatActivity() {
 
             val findButton = Button(this)
             findButton.text = "Find Item"
-            findButton.id = count + 1
+            findButton.id = count + 1        // id of find buttons are odd
             findButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(view: View) {
                     findClicked(view)
@@ -199,9 +202,20 @@ class NoteActivity : AppCompatActivity() {
 
     // opens search fragment to find specific item at the user's preferred store
     fun findClicked (view: View){
+        // this is the id of the view that was clicked
+        val eyedee = view.id
+        // find corresponding TextView text using map
+        val text = map[eyedee]
+
+        // find index of first occurence of that item in the names
+        // this will be the same index of the corresponding url
+        val index = names.indexOf(text);
+        val link = urls[index]
+        Log.i("Find button was pressed", "Name and url of item: " + text + " " + link)
+
         // if store is not chosen, take user to maps activity to choose
         if (storeChosen) {
-            val bottomSheetFragment = SearchFragment()
+            val bottomSheetFragment = SearchFragment.newInstance(link)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
         else{ // TODO Differentiate which Activity calls Maps so that if Maps is called by Note, it returns to Note and opens SearchFragment
