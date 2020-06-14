@@ -158,14 +158,15 @@ class NoteActivity : AppCompatActivity() {
             ll.orientation = LinearLayout.HORIZONTAL
 
             val tv = TextView(this)
-            tv.setMaxWidth(350);
-            tv.setMinWidth(350);
+            tv.setMaxWidth(680);
+            tv.setMinWidth(680);
             tv.text = enterItem.text.toString()
 
             val removeButton = Button(this)
             removeButton.id = count                                            // id of remove buttons are even
             val icon = resources.getDrawable(R.drawable.ic_del_24, theme)
             removeButton.background = icon
+            removeButton.layoutParams = LinearLayout.LayoutParams(90, 100)
             removeButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(view: View) {
                     removeClicked(view)
@@ -173,7 +174,9 @@ class NoteActivity : AppCompatActivity() {
             })
 
             val findButton = Button(this)
-            findButton.text = "Find Item"
+            val icon2 = resources.getDrawable(R.drawable.ic_baseline_search_24, theme)
+            findButton.background = icon2
+            findButton.layoutParams = LinearLayout.LayoutParams(100, 100)
             findButton.id = count + 1        // id of find buttons are odd
             findButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(view: View) {
@@ -201,26 +204,33 @@ class NoteActivity : AppCompatActivity() {
     }
 
     // opens search fragment to find specific item at the user's preferred store
-    fun findClicked (view: View){
+    // TODO Make sure only 1 of these fragments is open at a time
+    fun findClicked (view: View) {
         // this is the id of the view that was clicked
         val eyedee = view.id
         // find corresponding TextView text using map
         val text = map[eyedee]
 
-        // find index of first occurence of that item in the names
+        // find index of first occurrence of that item in the names
         // this will be the same index of the corresponding url
         val index = names.indexOf(text);
         val link = urls[index]
-        Log.i("Find button was pressed", "Name and url of item: " + text + " " + link)
+        Log.i("Find button was pressed", "Name and url of item: " + text.toString() + " " + link)
 
         // if store is not chosen, take user to maps activity to choose
         if (storeChosen) {
-            val bottomSheetFragment = SearchFragment.newInstance(link)
+            val bottomSheetFragment = SearchFragment.newInstance(link, text.toString())
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-        }
-        else{ // TODO Differentiate which Activity calls Maps so that if Maps is called by Note, it returns to Note and opens SearchFragment
+        } else { // TODO Differentiate which Activity calls Maps so that if Maps is called by Note, it returns to Note and opens SearchFragment
             startActivity(Intent(this@NoteActivity, MapsActivity::class.java))
         }
+    }
+
+    // opens browser to user's cart
+    // TODO Errortrap here to make sure the user's info is filled out properly
+    fun checkoutClicked (view: View){
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.nofrills.ca/cartReview"))
+        startActivity(browserIntent)
     }
 
     companion object {

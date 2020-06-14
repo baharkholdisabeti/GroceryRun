@@ -17,6 +17,7 @@
 
     <Button
         android:id="@+id/checkoutButton"
+        android:onClick="checkoutClicked"
         android:layout_width="249dp"
         android:layout_height="50dp"
         android:text="@string/checkout"

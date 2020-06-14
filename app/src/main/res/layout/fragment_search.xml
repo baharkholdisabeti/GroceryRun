@@ -6,10 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".SearchFragment">
 
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <TextView
         android:id="@+id/helloblank"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="400dp"
+        android:layout_height="30dp"
         android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>
